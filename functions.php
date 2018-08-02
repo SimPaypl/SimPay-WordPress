@@ -141,7 +141,7 @@ function simpay_ustawienia_func(){
 
 	require_once (plugin_dir_path(__FILE__) . 'SimPay.php');
 
-	require_once (plugin_dir_path(__FILE__) . 'jshandler.php');
+	require_once (plugin_dir_path(__FILE__) . 'SimPay_jshandler.php');
 
 	define('API_KEY', get_option('simpay_key'));
 	define('API_SECRET', get_option('simpay_secret'));
