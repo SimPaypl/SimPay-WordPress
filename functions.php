@@ -8,6 +8,11 @@ Author: SimPay.pl
 Author URI: https://darkgl.pl/
 License: GPL2
 */
+
+require_once (plugin_dir_path(__FILE__) . 'SimPay.php');
+
+require_once (plugin_dir_path(__FILE__) . 'SimPay_jshandler.php');
+
 register_activation_hook(__FILE__, 'simpay_create_db'); //create table
 add_action("admin_menu", "simpay_add_to_menu");
 
@@ -95,8 +100,6 @@ function simpay_register(){
 
 function simpay_register_validate($errors, $sanitized_user_login, $user_email){
 	try {
-		require_once (plugin_dir_path(__FILE__) . 'SimPay.php');
-
 
 		if (empty($_POST['kod_sms']) || !empty($_POST['kod_sms']) && trim($_POST['kod_sms']) == '') {
 			$errors->add('first_name_error', __('<strong>ERROR</strong>: Wprowadz kod SMS.', 'mydomain'));
@@ -106,7 +109,7 @@ function simpay_register_validate($errors, $sanitized_user_login, $user_email){
 
 		$codeSMS = trim( $_POST[ 'kod_sms' ] );
 
-		$api = new SimPay(get_option('simpay_key') , get_option('simpay_secret') , 1);
+		$api = new SimPay(get_option('simpay_key') , get_option('simpay_secret') );
 
 		$api->getStatus(array(
 			'service_id' => get_option("simpay-register-id") ,
@@ -139,13 +142,7 @@ function simpay_ustawienia_func(){
 	global $wpdb;
 	global $simpay_cennik;
 
-	require_once (plugin_dir_path(__FILE__) . 'SimPay.php');
-
-	require_once (plugin_dir_path(__FILE__) . 'SimPay_jshandler.php');
-
-	define('API_KEY', get_option('simpay_key'));
-	define('API_SECRET', get_option('simpay_secret'));
-	define('API_VERSION', 2);
+	$api = new SimPay( get_option('simpay_key') , get_option('simpay_secret') );
 
 	if (!empty($_POST[ 'aktualizuj_key' ])) {
 		update_option("simpay_key", trim($_POST["api_key"]));
@@ -155,14 +152,14 @@ function simpay_ustawienia_func(){
 
 	if (!empty($_POST[ 'aktualizuj_2' ])) {
 
-		$id_tresc = explode("|", $_POST["usluga"]);
-		$numer_cena = explode("|", $_POST["cena"]);
+		$id_tresc = explode( '|' , $_POST["usluga"]);
+		$numer_cena = explode( '|' , $_POST["cena"]);
 
 		if( count( $id_tresc ) != 2 ){
 			return;
 		}
 
-		if( count( $numer_cena ) != 1 ){
+		if( count( $numer_cena ) != 2 ){
 			return;
 		}
 
@@ -174,14 +171,14 @@ function simpay_ustawienia_func(){
 
 	if (!empty($_POST[ 'aktualizuj_3' ])) {
 
-		$id_tresc = explode("|", $_POST["usluga"]);
-		$numer_cena = explode("|", $_POST["cena"]);
+		$id_tresc = explode( '|', $_POST["usluga"]);
+		$numer_cena = explode( '|' , $_POST["cena"]);
 
 		if( count( $id_tresc ) != 2 ){
 			return;
 		}
 
-		if( count( $numer_cena ) != 1 ){
+		if( count( $numer_cena ) != 2 ){
 			return;
 		}
 
@@ -218,7 +215,6 @@ function simpay_ustawienia_func(){
 
 	if ($_GET['register'] == 1) {
 		try {
-			$api = new SimPay(API_KEY, API_SECRET, API_VERSION);
 			$string = $api->getServices();
 			$result = SimPay_JsonHandler::decode($string);
 			$json = json_decode($result, true);
@@ -252,7 +248,6 @@ function simpay_ustawienia_func(){
 		echo 'Dodaj usługe';
 
 		try {
-			$api = new SimPay(API_KEY, API_SECRET, API_VERSION);
 			$string = $api->getServices();
 			$result = SimPay_JsonHandler::decode($string);
 			$json = json_decode($result, true);
@@ -353,13 +348,11 @@ function simpay_podmien_zawartosc($content){
 			$alert = "";
 			if (!empty($_POST["simpay_sprawdz"]) && !empty($_POST["simpay_kodsms"])) {
 				if ($_POST["simpay_sprawdz"] == $value->id) {
-					define('API_KEY', get_option('simpay_key'));
-					define('API_SECRET', get_option('simpay_secret'));
-					define('API_VERSION', 1);
-					try {
-						require_once (plugin_dir_path(__FILE__) . 'SimPay.php');
 
-						$api = new SimPay(API_KEY, API_SECRET, API_VERSION);
+					try {
+
+						$api = new SimPay( get_option('simpay_key') , get_option('simpay_secret') );
+						
 						$api->getStatus(array(
 							'service_id' => $value->id_uslugi,
 							'number' => $value->numer,
@@ -398,7 +391,7 @@ function simpay_podmien_zawartosc($content){
 								<div class="col-md-12">
 									<input value="" placeholder="Kod usługi otrzymany SMSem..."  maxlength="100" cols="25" size="100" class="form-control" name="simpay_kodsms"
 									 required="" type="text"><br /><br />
-									<input required type="checkbox"> Akceptuję <a href="https://simpay.pl/">regulamin usługi</a> SMS
+									<input required type="checkbox"> Akceptuję <a href="https://simpay.pl/dokumenty/simpay_regulamin_uzytkownik_koncowy.pdf">regulamin usługi</a> SMS
 								</div>
 								<br />
 								<button style="margin-top: 40px;" type="submit" value="' . $value->id . '" name="simpay_sprawdz" class="btn btn-primary btn-lg">Zweryfikuj kod</button>

@@ -1,5 +1,5 @@
 <?php
-class JsonHandler {
+class SimPay_JsonHandler {
 
     protected static $_messages = array(
         JSON_ERROR_NONE => 'No error has occurred',

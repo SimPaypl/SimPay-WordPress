@@ -3,16 +3,11 @@
 class SimPay
 {
     protected $auth = array();
-    protected $api = '1';
     
     protected $response = array();
     protected $call = array();
     
-    public function __construct($key = '', $secret = '', $api = false)
-    {
-        if(isset($api) and !empty($api)) {
-            $this->api = $api;
-        } 
+    public function __construct($key = '', $secret = '' ){
         
         $this->auth = array(
             "auth" => array(
@@ -25,7 +20,7 @@ class SimPay
     public function url($value, $params = array())
     {
         $data = json_encode(array('params'=>array_merge($this->auth, $params)));
-        $this->call = $this->request($data, "https://simpay.pl/api/".$this->api."/".$value);
+        $this->call = $this->request($data, "https://simpay.pl/api/".$value);
         return $this->call;
     }
     
