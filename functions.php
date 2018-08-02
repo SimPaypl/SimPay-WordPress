@@ -9,11 +9,11 @@ Author URI: https://darkgl.pl/
 License: GPL2
 */
 register_activation_hook(__FILE__, 'simpay_create_db'); //create table
-add_action("admin_menu", "add_to_menu");
+add_action("admin_menu", "simpay_add_to_menu");
 
 // install
 
-$cennik = Array(
+$simpay_cennik = Array(
 	'7055' => '0.50',
 	'7136' => '1',
 	'7255' => '2',
@@ -72,7 +72,7 @@ function simpay_create_db(){
 // end
 // admin menu
 
-function add_to_menu(){
+function simpay_add_to_menu(){
 	add_menu_page("SimPay", "SimPay", "manage_options", "simpay-ustawienia", "simpay_ustawienia_func", plugins_url( 'SimPay-WordPress/simico.png' ), null, 99);
 }
 
@@ -82,11 +82,11 @@ add_action('register_form', 'simpay_register');
 add_filter('registration_errors', 'simpay_register_validate', 10, 3);
 
 function simpay_register(){
-	global $cennik;
+	global $simpay_cennik;
 	if (!empty(get_option("simpay-register-sms"))) {
 		echo '       
         <p>
-            <label for="kod_sms">Wyślij SMS o treści ' . get_option("simpay-register-sms") . ' pod numer ' . get_option("simpay-register-numer") . ' koszt sms to ' . round($cennik[get_option("simpay-register-numer") ] * 1.23, 2, PHP_ROUND_HALF_UP) . ' PLN (brutto), ' . $cennik[get_option("simpay-register-numer") ] . ' PLN (netto)<br />
+            <label for="kod_sms">Wyślij SMS o treści ' . get_option("simpay-register-sms") . ' pod numer ' . get_option("simpay-register-numer") . ' koszt sms to ' . round($simpay_cennik[get_option("simpay-register-numer") ] * 1.23, 2, PHP_ROUND_HALF_UP) . ' PLN (brutto), ' . $simpay_cennik[get_option("simpay-register-numer") ] . ' PLN (netto)<br />
                 <input type="text" name="kod_sms" id="kod_sms" class="input" size="25" required /></label>
         </p>
         ';
@@ -95,32 +95,37 @@ function simpay_register(){
 
 function simpay_register_validate($errors, $sanitized_user_login, $user_email){
 	try {
-		require_once (plugin_dir_path(__FILE__) . 'Simpay.php');
+		require_once (plugin_dir_path(__FILE__) . 'SimPay.php');
+
 
 		if (empty($_POST['kod_sms']) || !empty($_POST['kod_sms']) && trim($_POST['kod_sms']) == '') {
 			$errors->add('first_name_error', __('<strong>ERROR</strong>: Wprowadz kod SMS.', 'mydomain'));
+
+			return $errors;
 		}
-		else {
-			$api = new SimPay(get_option('simpay_key') , get_option('simpay_secret') , 1);
-			$api->getStatus(array(
-				'service_id' => get_option("simpay-register-id") ,
-				'number' => get_option("simpay-register-numer") ,
-				'code' => $_POST['kod_sms']
-			));
-			if ($api->check()) {
 
-				// kod poprawny
+		$codeSMS = trim( $_POST[ 'kod_sms' ] );
 
-			}
-			elseif ($api->error()) {
+		$api = new SimPay(get_option('simpay_key') , get_option('simpay_secret') , 1);
 
-				// niepoprawny kod
+		$api->getStatus(array(
+			'service_id' => get_option("simpay-register-id") ,
+			'number' => get_option("simpay-register-numer") ,
+			'code' => $codeSMS
+		));
 
-				$errors->add('first_name_error', __('<strong>ERROR</strong>: Podany kod jest niepoprawny.', 'mydomain'));
-			}
+		if ($api->check()) {
+
+			// kod poprawny
+
+		}
+		elseif ($api->error()) {
+
+			// niepoprawny kod
+
+			$errors->add('first_name_error', __('<strong>ERROR</strong>: Podany kod jest niepoprawny.', 'mydomain'));
 		}
 	}
-
 	catch(Exception $e) {
 		echo 'Error: ' . $e->getMessage();
 	}
@@ -132,9 +137,9 @@ function simpay_register_validate($errors, $sanitized_user_login, $user_email){
 
 function simpay_ustawienia_func(){
 	global $wpdb;
-	global $cennik;
+	global $simpay_cennik;
 
-	require_once (plugin_dir_path(__FILE__) . 'Simpay.php');
+	require_once (plugin_dir_path(__FILE__) . 'SimPay.php');
 
 	require_once (plugin_dir_path(__FILE__) . 'jshandler.php');
 
@@ -142,25 +147,44 @@ function simpay_ustawienia_func(){
 	define('API_SECRET', get_option('simpay_secret'));
 	define('API_VERSION', 2);
 
-	if (!empty($_POST["aktualizuj_key"])) {
+	if (!empty($_POST[ 'aktualizuj_key' ])) {
 		update_option("simpay_key", trim($_POST["api_key"]));
 		update_option("simpay_secret", trim($_POST["secret_key"]));
 		update_option("simpay_type", trim($_POST["typ"]));
 	}
 
-	if (!empty($_POST["aktualizuj_2"])) {
+	if (!empty($_POST[ 'aktualizuj_2' ])) {
+
 		$id_tresc = explode("|", $_POST["usluga"]);
 		$numer_cena = explode("|", $_POST["cena"]);
+
+		if( count( $id_tresc ) != 2 ){
+			return;
+		}
+
+		if( count( $numer_cena ) != 1 ){
+			return;
+		}
+
 		update_option("simpay-register-cena", $numer_cena[1]);
 		update_option("simpay-register-numer", trim($numer_cena[0]));
 		update_option("simpay-register-sms", trim('SIM.' . $id_tresc[1]));
 		update_option("simpay-register-id", trim($id_tresc[0]));
 	}
 
-	if (!empty($_POST["aktualizuj_3"])) {
-		global $wpdb;
+	if (!empty($_POST[ 'aktualizuj_3' ])) {
+
 		$id_tresc = explode("|", $_POST["usluga"]);
 		$numer_cena = explode("|", $_POST["cena"]);
+
+		if( count( $id_tresc ) != 2 ){
+			return;
+		}
+
+		if( count( $numer_cena ) != 1 ){
+			return;
+		}
+
 		$wpdb->insert($wpdb->prefix . "simpay", array(
 			'numer' => $numer_cena[0],
 			'usluga' => $id_tresc[1],
@@ -196,7 +220,7 @@ function simpay_ustawienia_func(){
 		try {
 			$api = new SimPay(API_KEY, API_SECRET, API_VERSION);
 			$string = $api->getServices();
-			$result = JsonHandler::decode($string);
+			$result = SimPay_JsonHandler::decode($string);
 			$json = json_decode($result, true);
 			echo '
 <form style="margin-top: 30px;" method="post">';
@@ -212,8 +236,8 @@ function simpay_ustawienia_func(){
 			echo '</select>';
 			echo '<select name="cena">';
 			echo '<option value="' . get_option("simpay-register-numer") . '|' . get_option("simpay-register-cena") . '">---Numer: ' . get_option("simpay-register-numer") . ' || Cena:' . round(get_option("simpay-register-cena") , 2, PHP_ROUND_HALF_UP) . 'PLN (brutto), ' . get_option("simpay-register-cena") / 1.23 . ' PLN (netto) ---</option>';
-			global $cennik;
-			foreach($cennik as $num => $cena) {
+			global $simpay_cennik;
+			foreach($simpay_cennik as $num => $cena) {
 				echo '<option value="' . $num . '|' . $cena . '">Numer: ' . $num . ' || Cena:' . round($cena * 1.23, 2, PHP_ROUND_HALF_UP) . 'PLN (brutto), ' . $cena . ' PLN (netto)</option>';
 			}
 
@@ -230,7 +254,7 @@ function simpay_ustawienia_func(){
 		try {
 			$api = new SimPay(API_KEY, API_SECRET, API_VERSION);
 			$string = $api->getServices();
-			$result = JsonHandler::decode($string);
+			$result = SimPay_JsonHandler::decode($string);
 			$json = json_decode($result, true);
 			echo '
 <form style="margin-top: 30px;" method="post">';
@@ -244,7 +268,7 @@ function simpay_ustawienia_func(){
 
 			echo '</select>';
 			echo '<select name="cena">';
-			foreach($cennik as $num => $cena) {
+			foreach($simpay_cennik as $num => $cena) {
 				echo '<option value="' . $num . '|' . $cena . '">Numer: ' . $num . ' || Cena:' . round($cena * 1.23, 2, PHP_ROUND_HALF_UP) . 'PLN (brutto), ' . $cena . ' PLN (netto)</option>';
 			}
 
@@ -292,10 +316,10 @@ function simpay_ustawienia_func(){
 	}
 }
 
-add_filter('the_content', 'podmien_zawartosc');
+add_filter('the_content', 'simpay_podmien_zawartosc');
 
-function podmien_zawartosc($content){
-	global $cennik;
+function simpay_podmien_zawartosc($content){
+	global $simpay_cennik;
 
 	if (is_front_page()) {
 		global $wpdb;
@@ -333,7 +357,7 @@ function podmien_zawartosc($content){
 					define('API_SECRET', get_option('simpay_secret'));
 					define('API_VERSION', 1);
 					try {
-						require_once (plugin_dir_path(__FILE__) . 'Simpay.php');
+						require_once (plugin_dir_path(__FILE__) . 'SimPay.php');
 
 						$api = new SimPay(API_KEY, API_SECRET, API_VERSION);
 						$api->getStatus(array(
@@ -367,7 +391,7 @@ function podmien_zawartosc($content){
 						<form method="POST">
 					<center
 								<hr>
-								<h4>Wyślij SMS o treści <span class="label label-primary">SIM.' . $value->usluga . '</span> na numer <span class="label label-primary">' . $value->numer . '</span> cena za sms wynosi <span class="label label-primary">' . round($cennik[$value->numer] * 1.23, 2, PHP_ROUND_HALF_UP) . '</span> PLN</h4>
+								<h4>Wyślij SMS o treści <span class="label label-primary">SIM.' . $value->usluga . '</span> na numer <span class="label label-primary">' . $value->numer . '</span> cena za sms wynosi <span class="label label-primary">' . round($simpay_cennik[$value->numer] * 1.23, 2, PHP_ROUND_HALF_UP) . '</span> PLN</h4>
 								<hr>
 								<h5>Wpisz kod usługi:</h5>
 							
