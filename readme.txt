@@ -1,9 +1,12 @@
-Plugin Name: SimPay for WordPress
-Plugin URI: https://simpay.pl/
-Description:  Wtyczka pozwalaj¹ca na integracjê systemu WordPress z p³atnoœciami SimPay.
-Version: 0.0.1
-Author: SimPay.pl
-Author URI: https://darkgl.pl/
-License: GPL2
+=== SimPay for WordPress ===
+Contributors: darkg
+Donate link: https://darkgl.pl/
+Tags: comments, spam
+Requires at least: 4.6
+Tested up to: 4.9.7
+Stable tag: 4.3
+Requires PHP: 5.2.4
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Plugin to integrate simpay.pl payment soultions for wordpress based website.

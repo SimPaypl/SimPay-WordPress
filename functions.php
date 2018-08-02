@@ -152,40 +152,46 @@ function simpay_ustawienia_func(){
 
 	if (!empty($_POST[ 'aktualizuj_2' ])) {
 
-		$id_tresc = explode( '|' , $_POST["usluga"]);
-		$numer_cena = explode( '|' , $_POST["cena"]);
+		$contextString = trim( $_POST[ 'usluga' ] );
+		$priceString = trim( $_POST[ 'cena' ] );
 
-		if( count( $id_tresc ) != 2 ){
+		$contextArray = explode( '|' , $contextString );
+		$priceArray = explode( '|' , $priceString );
+
+		if( count( $contextArray ) != 2 ){
 			return;
 		}
 
-		if( count( $numer_cena ) != 2 ){
+		if( count( $priceArray ) != 2 ){
 			return;
 		}
 
-		update_option("simpay-register-cena", $numer_cena[1]);
-		update_option("simpay-register-numer", trim($numer_cena[0]));
-		update_option("simpay-register-sms", trim('SIM.' . $id_tresc[1]));
-		update_option("simpay-register-id", trim($id_tresc[0]));
+		update_option("simpay-register-cena", $priceArray[1]);
+		update_option("simpay-register-numer", trim($priceArray[0]));
+		update_option("simpay-register-sms", trim('SIM.' . $contextArray[1]));
+		update_option("simpay-register-id", trim($contextArray[0]));
 	}
 
 	if (!empty($_POST[ 'aktualizuj_3' ])) {
 
-		$id_tresc = explode( '|', $_POST["usluga"]);
-		$numer_cena = explode( '|' , $_POST["cena"]);
+		$contextString = trim( $_POST[ 'usluga' ] );
+		$priceString = trim( $_POST[ 'cena' ] );
 
-		if( count( $id_tresc ) != 2 ){
+		$contextArray = explode( '|' , $contextString );
+		$priceArray = explode( '|' , $priceString );
+
+		if( count( $contextArray ) != 2 ){
 			return;
 		}
 
-		if( count( $numer_cena ) != 2 ){
+		if( count( $priceArray ) != 2 ){
 			return;
 		}
 
 		$wpdb->insert($wpdb->prefix . "simpay", array(
-			'numer' => $numer_cena[0],
-			'usluga' => $id_tresc[1],
-			'id_uslugi' => $id_tresc[0],
+			'numer' => $priceArray[0],
+			'usluga' => $contextArray[1],
+			'id_uslugi' => $contextArray[0],
 		));
 	}
 
@@ -352,7 +358,7 @@ function simpay_podmien_zawartosc($content){
 					try {
 
 						$api = new SimPay( get_option('simpay_key') , get_option('simpay_secret') );
-						
+
 						$api->getStatus(array(
 							'service_id' => $value->id_uslugi,
 							'number' => $value->numer,
