@@ -113,6 +113,8 @@ function simpay_register_validate($errors, $sanitized_user_login, $user_email){
 
 		$codeSMS = trim( $_POST[ 'kod_sms' ] );
 
+		$codeSMS = filter_var( $codeSMS, FILTER_SANITIZE_STRING );
+
 		if( strlen( $codeSMS ) == 0 ){
 			$errors->add('first_name_error', __('<strong>ERROR</strong>: Wprowadz kod SMS.', 'mydomain'));
 
