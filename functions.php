@@ -113,6 +113,12 @@ function simpay_register_validate($errors, $sanitized_user_login, $user_email){
 
 		$codeSMS = trim( $_POST[ 'kod_sms' ] );
 
+		if( strlen( $codeSMS ) == 0 ){
+			$errors->add('first_name_error', __('<strong>ERROR</strong>: Wprowadz kod SMS.', 'mydomain'));
+
+			return $errors;
+		}
+
 		$api = new SimPay(get_option('simpay_key') , get_option('simpay_secret') );
 
 		$api->getStatus(array(
