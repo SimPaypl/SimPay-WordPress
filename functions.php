@@ -14,7 +14,14 @@ require_once (plugin_dir_path(__FILE__) . 'SimPay.php');
 require_once (plugin_dir_path(__FILE__) . 'SimPay_jshandler.php');
 
 register_activation_hook(__FILE__, 'simpay_create_db'); //create table
-add_action("admin_menu", "simpay_add_to_menu");
+
+add_action( 'admin_menu' , 'simpay_add_to_menu' );
+
+add_filter('the_content', 'simpay_podmien_zawartosc');
+
+add_action('register_form', 'simpay_register');
+
+add_filter('registration_errors', 'simpay_register_validate', 10, 3);
 
 // install
 
@@ -43,7 +50,6 @@ function simpay_create_db(){
 
 	add_option("simpay_key", "");
 	add_option("simpay_secret", "");
-	add_option("simpay_type", "");
 	add_option("simpay-register-sms", "");
 	add_option("simpay-register-numer", "");
 	add_option("simpay-register-sekret", "");
@@ -83,11 +89,9 @@ function simpay_add_to_menu(){
 
 // end
 
-add_action('register_form', 'simpay_register');
-add_filter('registration_errors', 'simpay_register_validate', 10, 3);
-
 function simpay_register(){
 	global $simpay_cennik;
+
 	if (!empty(get_option("simpay-register-sms"))) {
 		echo '       
         <p>
@@ -142,15 +146,34 @@ function simpay_ustawienia_func(){
 	global $wpdb;
 	global $simpay_cennik;
 
+	if( !current_user_can( 'administrator' ) ){
+		return;
+	}
+
 	$api = new SimPay( get_option('simpay_key') , get_option('simpay_secret') );
 
 	if (!empty($_POST[ 'aktualizuj_key' ])) {
-		update_option("simpay_key", trim($_POST["api_key"]));
-		update_option("simpay_secret", trim($_POST["secret_key"]));
-		update_option("simpay_type", trim($_POST["typ"]));
+
+		if( !check_admin_referer( 'simpay' ) ){
+			return;
+		}
+
+		$apiKey = trim( $_POST[ 'api_key' ] );
+		$apiSecret = trim( $_POST[ 'secret_key' ] );
+
+		if( filter_var( $apiKey, FILTER_SANITIZE_STRING ) !== FALSE &&
+			filter_var( $apiSecret, FILTER_SANITIZE_STRING ) !== FALSE ){
+
+			update_option("simpay_key", $apiKey );
+			update_option("simpay_secret", $apiSecret );
+		}
 	}
 
 	if (!empty($_POST[ 'aktualizuj_2' ])) {
+
+		if( !check_admin_referer( 'simpay' ) ){
+			return;
+		}
 
 		$contextString = trim( $_POST[ 'usluga' ] );
 		$priceString = trim( $_POST[ 'cena' ] );
@@ -174,6 +197,10 @@ function simpay_ustawienia_func(){
 
 	if (!empty($_POST[ 'aktualizuj_3' ])) {
 
+		if( !check_admin_referer( 'simpay' ) ){
+			return;
+		}
+
 		$contextString = trim( $_POST[ 'usluga' ] );
 		$priceString = trim( $_POST[ 'cena' ] );
 
@@ -196,15 +223,14 @@ function simpay_ustawienia_func(){
 	}
 
 	$t_menu = '<ul class="subsubsub">
-    <li><a href="?page=simpay-ustawienia" class="current">Blokowanie treści</a> |</li>
-    <li><a href="?page=simpay-ustawienia&register=1">Blokowanie rejestracji</a></li>
-
+    <li><a href="' . wp_nonce_url( '?page=simpay-ustawienia' ) . '" class="current">Blokowanie treści</a> |</li>
+    <li><a href="' . wp_nonce_url( '?page=simpay-ustawienia&register=1' ) . '">Blokowanie rejestracji</a></li>
 </ul>';
 
 	if (!empty($_GET["register"])) {
 		$t_menu = '<ul class="subsubsub">
-    <li><a href="?page=simpay-ustawienia" >Blokowanie treści</a> |</li>
-    <li><a href="?page=simpay-ustawienia&register=1" class="current">Blokowanie rejestracji</a></li>
+    <li><a href="' . wp_nonce_url( '?page=simpay-ustawienia' ) . '" >Blokowanie treści</a> |</li>
+    <li><a href="' . wp_nonce_url( '?page=simpay-ustawienia&register=1' ) . '" class="current">Blokowanie rejestracji</a></li>
 </ul>';
 	}
 
@@ -212,10 +238,12 @@ function simpay_ustawienia_func(){
         <form style="margin-top: 30px;" method="post">
              <p><span style="font-size: 28px; font-weight: 600;">Klucz API:</span></p>
              <br />Tutaj możesz sprawdzić te dane:  <a href="https://simpay.pl/panel/Client/API">https://simpay.pl/panel/Client/API</a> <br /> <br />
-        <input type="text" name="api_key" placeholder="API KEY" value="' . get_option("simpay_key") . '" required/>
-         <input type="text" name="secret_key" placeholder="SECRET" value="' . get_option("simpay_secret") . '" required/>
+    		<input type="text" name="api_key" placeholder="API KEY" value="' . get_option("simpay_key") . '" required/>
+         	<input type="text" name="secret_key" placeholder="SECRET" value="' . get_option("simpay_secret") . '" required/>';
 
-             <button type="submit" value="1" name="aktualizuj_key" class="button button-primary">Aktualizuj</button>
+    wp_nonce_field( 'simpay' );
+
+    echo '<button type="submit" value="1" name="aktualizuj_key" class="button button-primary">Aktualizuj</button>
         </form><br />
 ' . $t_menu . '<br /><br />';
 
@@ -224,10 +252,9 @@ function simpay_ustawienia_func(){
 			$string = $api->getServices();
 			$result = SimPay_JsonHandler::decode($string);
 			$json = json_decode($result, true);
-			echo '
-<form style="margin-top: 30px;" method="post">';
+			echo '<form style="margin-top: 30px;" method="post">';
 			echo '<select name="usluga">';
-			echo '<option value="' . get_option("simpay-register-id") . '|' . get_option("simpay-register-sms") . '">---' . get_option("simpay-register-sms") . '---</option>';
+			echo '<option value="' . get_option("simpay-register-id") . '|' . str_replace( 'SIM.' , '' , get_option("simpay-register-sms") ) . '">---' . get_option("simpay-register-sms") . '---</option>';
 			echo 'Usługa:';
 			foreach($json["respond"] as $obj) {
 				if (!empty($obj)) {
@@ -242,6 +269,8 @@ function simpay_ustawienia_func(){
 			foreach($simpay_cennik as $num => $cena) {
 				echo '<option value="' . $num . '|' . $cena . '">Numer: ' . $num . ' || Cena:' . round($cena * 1.23, 2, PHP_ROUND_HALF_UP) . 'PLN (brutto), ' . $cena . ' PLN (netto)</option>';
 			}
+
+			wp_nonce_field( 'simpay' );
 
 			echo '</select><button type="submit" value="1" name="aktualizuj_2" class="button button-primary">Aktualizuj</button>
 </form>';
@@ -273,6 +302,8 @@ function simpay_ustawienia_func(){
 				echo '<option value="' . $num . '|' . $cena . '">Numer: ' . $num . ' || Cena:' . round($cena * 1.23, 2, PHP_ROUND_HALF_UP) . 'PLN (brutto), ' . $cena . ' PLN (netto)</option>';
 			}
 
+			wp_nonce_field( 'simpay' );
+
 			echo '</select><button type="submit" value="1" name="aktualizuj_3" class="button button-primary">Dodaj</button>
 </form>';
 		}
@@ -295,19 +326,26 @@ function simpay_ustawienia_func(){
 
 		foreach($uslugi as & $value) {
 			echo '
-<tr>
-<td>' . $value->numer . ':' . $value->usluga . '</td>
-<td><textarea style="width: 100%;"> [hidden_content_' . $value->id . ']Odblokowana zawartość[/hidden_content_' . $value->id . ']</textarea></td>
-<td><form method="post"><button name="delete" type="submit" value="' . $value->id . '" class="button button-primary">Usuń</button></form></td>
-</tr>
+			<tr>
+			<td>' . $value->numer . ':' . $value->usluga . '</td>
+			<td><textarea style="width: 100%;"> [hidden_content_' . $value->id . ']Odblokowana zawartość[/hidden_content_' . $value->id . ']</textarea></td>
+			<td><form method="post"><button name="delete" type="submit" value="' . $value->id . '" class="button button-primary">Usuń</button>';
+
+			wp_nonce_field( 'simpay' );
+
+			echo '</form></td>
+			</tr>
    ';
 		}
 
 		if (isset($_POST['delete'])) {
+
 			$table = $wpdb->prefix . "simpay";
 
+			$postID = intval( trim( $_POST['delete'] ) );
+
 			$wpdb->delete($table, array(
-				'id' => $_POST['delete']
+				'id' => $postID
 			));
 
 			header("Refresh:0");
@@ -315,9 +353,9 @@ function simpay_ustawienia_func(){
 
 		echo ' </table>';
 	}
-}
 
-add_filter('the_content', 'simpay_podmien_zawartosc');
+	return '';
+}
 
 function simpay_podmien_zawartosc($content){
 	global $simpay_cennik;
@@ -416,6 +454,7 @@ function simpay_podmien_zawartosc($content){
 	}
 
 	remove_filter('the_content', 'se225721_the_content');
+
 	return $content;
 }
 
