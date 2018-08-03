@@ -1,5 +1,5 @@
 === SimPay for WordPress ===
-Contributors: darkg
+Contributors: darkgl
 Donate link: https://darkgl.pl/
 Tags: comments, spam
 Requires at least: 4.6
