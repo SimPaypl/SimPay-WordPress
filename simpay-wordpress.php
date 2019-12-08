@@ -9,7 +9,7 @@
  * Plugin Name:       SimPay.pl Płatności SMS dla WordPress
  * Plugin URI:        https://www.simpay.pl
  * Description:       Plugin umożliwający pobieranie opłat za dostęp do treści lub dostęp do rejestracji
- * Version:           1.0.0
+ * Version:           1.1.0
  * Author:            Krzysztof Grzelak
  * Author URI:        https://www.simpay.pl
  * License:           GPL-2.0+
