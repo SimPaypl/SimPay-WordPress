@@ -1,9 +1,9 @@
 === SimPay for WordPress ===
 Contributors: darkgl
 Donate link: https://darkgl.pl/
-Tags: comments, spam
+Tags: simpay, payments, directbiling, sms
 Requires at least: 4.6
-Tested up to: 4.9.7
+Tested up to: 5.3
 Stable tag: 4.3
 Requires PHP: 5.2.4
 License: GPLv2 or later
