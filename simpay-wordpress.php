@@ -31,14 +31,14 @@ register_activation_hook(__FILE__, 'simpay_install');
 register_deactivation_hook(__FILE__, 'simpay_uninstall');
 
 /*
-	* Definiowanie formularza odpowiedzialnego za płatność przy rejestracji.
+    * Definiowanie formularza odpowiedzialnego za płatność przy rejestracji.
 */
 add_action('register_form', 'simpay_register_form');
 add_filter('registration_errors', 'simpay_register_validate', 10, 3);
 
 /*
-	* Definiowanie nowej zakładki w menu.
+    * Definiowanie nowej zakładki w menu.
 */
-add_action('admin_menu' , 'simpay_menu_add');
+add_action('admin_menu', 'simpay_menu_add');
 
 add_filter('the_content', 'simpay_content');
