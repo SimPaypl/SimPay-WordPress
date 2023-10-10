@@ -19,3 +19,18 @@ Here you will find files to download and install the official SimPay plugin for 
 * *Safety and continuous technical support* – we guarantee proper security for all payments. And in case of problems with the integration or operation of SimPay systems, we immediately respond with support.
 
 Do you have an issue with integration or want to learn more? Write to kontakt@simpay.pl
+
+## Requirements
+
+* PHP >= 8.1
+* Wordpress >= 6.0
+* Composer >= 2.1
+* SimPay API credentials
+
+## Installation
+
+1. Download the latest release from [here](#)
+2. Upload the plugin to your Wordpress installation
+3. Activate the plugin
+4. Go to the plugin settings page and enter your API credentials
+5. You're ready to go!

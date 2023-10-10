@@ -1,0 +1,24 @@
+{
+    "name": "simpay/simpay-wordpress",
+    "version": "2.0.0",
+    "type": "library",
+    "require": {
+        "simpaypl/simpay": "^2.2",
+        "ext-yaml": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "SimPay\\SimPayWordpressPlugin\\": "src/",
+            "SimPay\\SimPayWordpressPlugin\\Migrations\\": "migrations/"
+        }
+    },
+    "archive": {
+        "exclude": [
+            ".*",
+            "composer.*",
+            "output.*",
+            "DOCKER_ENV",
+            "docker_tag"
+        ]
+    }
+}

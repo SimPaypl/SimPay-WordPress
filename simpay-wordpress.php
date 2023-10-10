@@ -1,44 +1,46 @@
 <?php
+
 /**
- *
- * @link              https://www.simpay.pl
- * @since             1.0.0
- * @package           simpay-wordpress
- *
- * @wordpress-plugin
- * Plugin Name:       SimPay.pl Płatności SMS dla WordPress
- * Plugin URI:        https://www.simpay.pl
- * Description:       Plugin umożliwający pobieranie opłat za dostęp do treści lub dostęp do rejestracji
- * Version:           1.1.0
- * Author:            Krzysztof Grzelak
- * Author URI:        https://www.simpay.pl
+ * Plugin Name:       SimPay Wordpress
+ * Plugin URI:        https://simpay.pl
+ * Description:       Use SimPay SMS service to use during registration or access to the post.
+ * Version:           2.0.0
+ * Author:            SimPay
+ * Author URI:        https://simpay.pl
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- *
- **/
+ * Text Domain:       simpay-wordpress
+ */
 
-if (!defined('ABSPATH')) {
-    exit();
+use SimPay\SimPayWordpressPlugin\PluginManagement\PluginManagerFactory;
+
+defined( 'ABSPATH' ) || exit;
+
+define('SIMPAY_PLUGIN_FILE', __FILE__ );
+define('SIMPAY_ABSPATH', __DIR__ . '/');
+define('SIMPAY_CONFIG_PATH', __DIR__ . '/config/simpay-wordpress.yaml');
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+function activateSimPayWordpressPlugin(): void {
+    $pluginManager = PluginManagerFactory::create();
+
+    $pluginManager->activatePlugin();
 }
 
-require_once(plugin_dir_path(__FILE__) . 'req/class/SimPay.class.php');
-require_once(plugin_dir_path(__FILE__) . 'req/functions.php');
-require_once(plugin_dir_path(__FILE__) . 'req/simpay.php');
+function deactivateSimPayWordpressPlugin(): void {
+    $pluginManager = PluginManagerFactory::create();
 
-$simpay = new SimPay(get_option('simpay_key'), get_option('simpay_secret'));
+    $pluginManager->deactivatePlugin();
+}
 
-register_activation_hook(__FILE__, 'simpay_install');
-register_deactivation_hook(__FILE__, 'simpay_uninstall');
+register_activation_hook( __FILE__, 'activateSimPayWordpressPlugin' );
+register_deactivation_hook( __FILE__, 'deactivateSimPayWordpressPlugin' );
 
-/*
-    * Definiowanie formularza odpowiedzialnego za płatność przy rejestracji.
-*/
-add_action('register_form', 'simpay_register_form');
-add_filter('registration_errors', 'simpay_register_validate', 10, 3);
+function initSimPay(): void {
+    $pluginManager = PluginManagerFactory::create();
 
-/*
-    * Definiowanie nowej zakładki w menu.
-*/
-add_action('admin_menu', 'simpay_menu_add');
+    $pluginManager->init();
+}
 
-add_filter('the_content', 'simpay_content');
+add_action( 'plugins_loaded', 'initSimPay', 11 );

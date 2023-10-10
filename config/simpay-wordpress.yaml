@@ -1,0 +1,10 @@
+plugin_config:
+  modules:
+    - SimPay\SimPayWordpressPlugin\Modules\AdminManager\SimPayAdminManager
+    - SimPay\SimPayWordpressPlugin\Modules\RegisterMode\RegisterModeModule
+    - SimPay\SimPayWordpressPlugin\Modules\PaywallMode\PaywallModeModule
+  migration:
+    migration_path: '%plugin_dir/migrations/'
+    migrations:
+      - SimPay\SimPayWordpressPlugin\Migrations\Version_100_plugin_initialize
+
