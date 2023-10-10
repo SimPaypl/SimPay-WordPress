@@ -2,7 +2,7 @@ name: CI
 
 env:
   php_version: "8.2"
-  blob_name: "simpay-wordpress-*.zip"
+  blob_name: "simpay-wordpress-${{ github.ref_name }}.zip"
   archive_format: "zip"
 
 on:
@@ -28,6 +28,8 @@ jobs:
         php_extensions: yaml
         command: archive
         args: --format=${{ env.archive_format }}
+    - name: Rename archive
+      run: mv simpay-wordpress.zip simpay-wordpress-${{ github.ref_name }}.zip
     - name: Release
       uses: softprops/action-gh-release@v1
       if: success() || failure()

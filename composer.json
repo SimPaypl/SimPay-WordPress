@@ -20,6 +20,6 @@
             "DOCKER_ENV",
             "docker_tag"
         ],
-        "name": "simpay-wordpress-{$version}.zip"
+        "name": "simpay-wordpress.zip"
     }
 }
