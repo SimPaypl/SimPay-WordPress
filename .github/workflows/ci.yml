@@ -1,0 +1,36 @@
+name: CI
+
+env:
+  php_version: "8.2"
+  blob_name: "simpay-wordpress-*.zip"
+  archive_format: "zip"
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install dependencies
+      uses: php-actions/composer@v6
+      with:
+        php_version: ${{ env.php_version }}
+        php_extensions: yaml
+    - name: Archive project
+      if: success() || failure()
+      uses: php-actions/composer@v6
+      with:
+        php_version: ${{ env.php_version }}
+        php_extensions: yaml
+        command: archive
+        args: --format=${{ env.archive_format }}
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      if: success() || failure()
+      with:
+        files: ${{ env.blob_name }}
+        tag_name: ${{ inputs.version }}
