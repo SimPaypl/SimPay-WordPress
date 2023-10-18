@@ -20,7 +20,7 @@ final class DatabaseMigrationService implements DatabaseMigrationInterface
         private readonly QueryManagerInterface $queryManagerService,
         private readonly ConfigManagerInterface $configManager,
     ) {
-        $this->currentDbVersion = (int)\get_option(self::CURRENT_DB_VERSION_OPTION_NAME, 0);
+        $this->currentDbVersion = (int) \get_option(self::CURRENT_DB_VERSION_OPTION_NAME, 0);
     }
 
     /**

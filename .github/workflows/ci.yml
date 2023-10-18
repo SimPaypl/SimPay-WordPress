@@ -19,13 +19,11 @@ jobs:
       uses: php-actions/composer@v6
       with:
         php_version: ${{ env.php_version }}
-        php_extensions: yaml
     - name: Archive project
       if: success() || failure()
       uses: php-actions/composer@v6
       with:
         php_version: ${{ env.php_version }}
-        php_extensions: yaml
         command: archive
         args: --format=${{ env.archive_format }}
     - name: Release

@@ -4,14 +4,8 @@ declare(strict_types=1);
 
 namespace SimPay\SimPayWordpressPlugin\Config;
 
-use function array_keys;
-use function array_values;
-use function str_replace;
-use function yaml_parse_file;
-
 final class ConfigManagerService implements ConfigManagerInterface
 {
-
     private array $configTree;
 
     /**
@@ -27,26 +21,28 @@ final class ConfigManagerService implements ConfigManagerInterface
      */
     private function loadConfig(): void
     {
-        $yamlTags = $this->getYamlTags();
-
-        $ndocs = null;
-        $this->configTree = yaml_parse_file(
-            $this->configFilePath,
-            0,
-            $ndocs,
-            ['' => fn($value) => str_replace(array_keys($yamlTags), array_values($yamlTags), $value)]
-        );
-
-        if ($this->configTree === false) {
-            throw new ConfigManagerException('Invalid or missing yaml config');
+        $jsonContent = file_get_contents($this->configFilePath);
+        if (false === $jsonContent) {
+            throw new ConfigManagerException('Unable to read JSON config file');
         }
+
+        $this->configTree = json_decode($jsonContent, true);
+        if (null === $this->configTree) {
+            throw new ConfigManagerException('Invalid or missing JSON config');
+        }
+
+        $this->configTree = $this->replaceTags($this->configTree);
     }
 
-    private function getYamlTags(): array
+    private function replaceTags(array $config): array
     {
-        return [
-            '%plugin_dir' => SIMPAY_ABSPATH,
-        ];
+        array_walk_recursive($config, function (&$value) {
+            if (is_string($value)) {
+                $value = \str_replace('%plugin_dir', SIMPAY_ABSPATH, $value);
+            }
+        });
+
+        return $config;
     }
 
     public function getConfig($configName, $defaultValue = null): mixed

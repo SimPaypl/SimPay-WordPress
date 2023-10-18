@@ -3,8 +3,7 @@
     "version": "2.0.0",
     "type": "library",
     "require": {
-        "simpaypl/simpay": "^2.2",
-        "ext-yaml": "*"
+        "simpaypl/simpay": "^2.2"
     },
     "autoload": {
         "psr-4": {
