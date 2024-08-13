@@ -19,6 +19,9 @@ jobs:
       uses: php-actions/composer@v6
       with:
         php_version: ${{ env.php_version }}
+        command: install
+        args: --no-dev --optimize-autoloader
+        
     - name: Archive project
       if: success() || failure()
       uses: php-actions/composer@v6
@@ -26,6 +29,7 @@ jobs:
         php_version: ${{ env.php_version }}
         command: archive
         args: --format=${{ env.archive_format }}
+        
     - name: Release
       uses: softprops/action-gh-release@v1
       if: success() || failure()
