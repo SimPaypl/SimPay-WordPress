@@ -22,28 +22,28 @@ define('SIMPAY_CONFIG_PATH', __DIR__.'/config/simpay-wordpress.json');
 
 require_once __DIR__.'/vendor/autoload.php';
 
-function activateSimPayWordpressPlugin(): void
+function simpay_activateSimPayWordpressPlugin(): void
 {
     $pluginManager = PluginManagerFactory::create();
 
     $pluginManager->activatePlugin();
 }
 
-function deactivateSimPayWordpressPlugin(): void
+function simpay_deactivateSimPayWordpressPlugin(): void
 {
     $pluginManager = PluginManagerFactory::create();
 
     $pluginManager->deactivatePlugin();
 }
 
-register_activation_hook(__FILE__, 'activateSimPayWordpressPlugin');
-register_deactivation_hook(__FILE__, 'deactivateSimPayWordpressPlugin');
+register_activation_hook(__FILE__, 'simpay_activateSimPayWordpressPlugin');
+register_deactivation_hook(__FILE__, 'simpay_deactivateSimPayWordpressPlugin');
 
-function initSimPay(): void
+function simpay_initSimPay(): void
 {
     $pluginManager = PluginManagerFactory::create();
 
     $pluginManager->init();
 }
 
-add_action('plugins_loaded', 'initSimPay', 11);
+add_action('plugins_loaded', 'simpay_initSimPay', 11);
