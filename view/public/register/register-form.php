@@ -1,7 +1,9 @@
 <p class="message">
-    Aby się zarejestrować, wyślij SMS <br>na numer <strong><?php echo $smsNumber; ?></strong><br>
+    Aby się zarejestrować, wyślij SMS <br>na numer
+    <strong><?php echo $smsNumber; ?></strong><br>
     o treści <strong><?php echo $smsCode; ?></strong>.<br>
-    Koszt SMS to <strong><?php echo $smsPrice; ?> zł (brutto)</strong>
+    Koszt SMS to <strong><?php echo esc_html($smsPrice); ?> zł
+        (brutto)</strong>
 </p>
 <br>
 <p>

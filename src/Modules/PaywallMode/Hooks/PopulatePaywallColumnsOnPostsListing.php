@@ -20,10 +20,10 @@ final class PopulatePaywallColumnsOnPostsListing implements ActionInterface
 
     public function __invoke(string $column, int $postId): void
     {
-        if ($column != 'paywall-users') {
+        if ('paywall-users' != $column) {
             return;
         }
 
-        echo $this->paywallModeService->getNumberOfPaywallUsersOfPost($postId);
+        echo esc_html($this->paywallModeService->getNumberOfPaywallUsersOfPost($postId));
     }
 }

@@ -2,9 +2,10 @@
     exit;
 } ?>
 
-<select id="<?php echo $args['name']; ?>"
+<select
+    id="<?php echo esc_html($args['name']); ?>"
     class='post_form'
-    name='<?php echo $args['name']; ?>'>
+    name='<?php echo esc_html($args['name']); ?>'>
 
     <?php foreach ($args['options'] as $optionValue => $optionTitle) {
         if ($args['value'] == $optionValue) {

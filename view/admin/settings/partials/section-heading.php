@@ -2,4 +2,4 @@
     exit;
 } ?>
 
-<h3><?php echo $title; ?></h3>
+<h3><?php echo esc_html($title); ?></h3>

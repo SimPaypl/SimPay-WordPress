@@ -12,7 +12,7 @@
     <form method="post">
         <input type="text" name="sms_code" id="sms_code" class="input" size="25" placeholder="Kod SMS" required />
         <input type="hidden" name="post_id"
-            value="<?php echo $postId; ?>">
+            value="<?php echo esc_html($postId); ?>">
         <button>Wyślij</button>
     </form>
 </div>
