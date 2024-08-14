@@ -33,11 +33,11 @@ class AddPaywallOnPost implements FilterInterface
 
     public function __invoke($content): string
     {
-        if ($this->simPayOptions['simpay_plugin_mode'] !== 'per_post') {
+        if ('per_post' !== $this->simPayOptions['simpay_plugin_mode']) {
             return $content;
         }
 
-        if ($this->simPayOptions['simpay_plugin_mode'] !== 'per_post') {
+        if ('per_post' !== $this->simPayOptions['simpay_plugin_mode']) {
             return $content;
         }
 
@@ -49,7 +49,7 @@ class AddPaywallOnPost implements FilterInterface
         $this->paywallActive = (bool) $paywallActiveOption;
         $this->postSmsNumber = (int) $postSmsNumber;
 
-        if ($this->paywallActive !== true) {
+        if (true !== $this->paywallActive) {
             return $content;
         }
 
@@ -64,8 +64,8 @@ class AddPaywallOnPost implements FilterInterface
         if (!is_user_logged_in()) {
             return $this->showNotLoggedInAlert();
         }
-        return $this->handlePaywallForm($wp_query);
 
+        return $this->handlePaywallForm($wp_query);
 
         return $content;
     }
@@ -88,11 +88,13 @@ class AddPaywallOnPost implements FilterInterface
         if (isset($_POST['sms_code'])) {
             if ($error = $this->validateSmsForm()) {
                 $this->renderSimPayPaymentForm(get_the_ID(), $error);
+
                 return '';
             }
             $this->paywallModeService->grantAccessToPost(get_current_user_id(), get_the_ID());
 
             $this->renderSuccessfulAlert();
+
             return '';
         }
         $this->renderSimPayPaymentForm(get_the_ID());
@@ -105,12 +107,15 @@ class AddPaywallOnPost implements FilterInterface
      */
     private function validateSmsForm(): ?string
     {
-        if (!isset($_POST['sms_code']) || trim($_POST['sms_code']) === '') {
+        $sms_code = isset($_POST['sms_code']) ? \sanitize_text_field(trim($_POST['sms_code'])) : '';
+
+        if ('' === $sms_code) {
             $errors = __('<strong>Error</strong>: Enter SMS code.', 'simpay-wordpress');
+
             return $errors;
         }
 
-        if (!$this->simPayService->getSmsCodeValidation($_POST['sms_code'], $this->postSmsNumber)->isValid()) {
+        if (!$this->simPayService->getSmsCodeValidation($sms_code, $this->postSmsNumber)->isValid()) {
             $errors = __('<strong>Error</strong>: Invalid SMS code.', 'simpay-wordpress');
         }
 

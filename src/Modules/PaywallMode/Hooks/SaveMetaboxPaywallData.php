@@ -25,7 +25,7 @@ class SaveMetaboxPaywallData implements ActionInterface
             update_post_meta(
                 $postId,
                 'paywall_price',
-                $_POST['paywall_price']
+                intval($_POST['paywall_price'])
             );
         }
     }

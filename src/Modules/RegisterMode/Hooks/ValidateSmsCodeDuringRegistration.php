@@ -48,13 +48,15 @@ class ValidateSmsCodeDuringRegistration implements FilterInterface
             return $errors;
         }
 
-        if (!isset($_POST['sms_code']) || '' === trim($_POST['sms_code'])) {
+        $sms_code = isset($_POST['sms_code']) ? \sanitize_text_field(trim($_POST['sms_code'])) : '';
+
+        if ('' === $sms_code) {
             $errors->add('sms_code', __('<strong>Error</strong>: Enter SMS code.', 'simpay-wordpress'));
 
             return $errors;
         }
 
-        if (!$this->simPayService->getSmsCodeValidation($_POST['sms_code'], $this->smsNumber)->isValid()) {
+        if (!$this->simPayService->getSmsCodeValidation($sms_code, $this->smsNumber)->isValid()) {
             $errors->add('sms_code', __('<strong>Error</strong>: Invalid SMS code.', 'simpay-wordpress'));
         }
 
