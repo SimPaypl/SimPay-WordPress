@@ -20,7 +20,7 @@ jobs:
       with:
         php_version: ${{ env.php_version }}
         command: install
-        args: --no-dev --optimize-autoloader
+        args: --no-dev --no-interaction --prefer-dist --optimize-autoloader --classmap-authoritative
         
     - name: Archive project
       if: success() || failure()
