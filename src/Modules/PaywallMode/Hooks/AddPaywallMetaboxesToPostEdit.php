@@ -39,9 +39,9 @@ final class AddPaywallMetaboxesToPostEdit implements ActionInterface
         $this->post = $post;
         $this->view->render('admin.settings.partials.table-form', [
             'elements' => [
-                __('Is Paywall active:') => [$this, 'getIsPaywallActive'],
-                __('SMS Numbers:') => [$this, 'getSmsNumbers'],
-            ]
+                __('Is Paywall active:', 'simpay-wordpress') => [$this, 'getIsPaywallActive'],
+                __('SMS Numbers:', 'simpay-wordpress') => [$this, 'getSmsNumbers'],
+            ],
         ]);
     }
 
@@ -69,8 +69,8 @@ final class AddPaywallMetaboxesToPostEdit implements ActionInterface
             'args' => [
                 'name' => 'paywall_price',
                 'value' => get_post_meta($this->post->ID, 'paywall_price', null)[0] ?? false,
-                'options' => $options
-            ]
+                'options' => $options,
+            ],
         ]);
     }
 
