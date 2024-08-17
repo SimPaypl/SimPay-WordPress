@@ -21,9 +21,9 @@
             $disabledReason = '';
         }
         ?>
-    <option value="<?php echo $optionValue; ?>" <?php echo $checked; ?><?php echo $disabled; ?>>
-        <?php echo $optionTitle; ?>
-        <?php echo $disabledReason; ?>
+    <option value="<?php echo esc_html($optionValue); ?>" <?php echo esc_html($checked); ?><?php echo esc_html($disabled); ?>>
+        <?php echo esc_html($optionTitle); ?>
+        <?php echo esc_html($disabledReason); ?>
     </option>
     <?php } ?>
 </select>

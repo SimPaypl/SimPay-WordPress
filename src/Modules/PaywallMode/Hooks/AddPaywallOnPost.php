@@ -85,6 +85,10 @@ class AddPaywallOnPost implements FilterInterface
      */
     private function handlePaywallForm(mixed $wpQuery): ?string
     {
+        if (!isset($_POST['_simpay_nonce']) || !wp_verify_nonce($_POST['_simpay_nonce'], 'simpay_paywall_nonce')) {
+            return '';
+        }
+
         if (isset($_POST['sms_code'])) {
             if ($error = $this->validateSmsForm()) {
                 $this->renderSimPayPaymentForm(get_the_ID(), $error);
@@ -138,6 +142,7 @@ class AddPaywallOnPost implements FilterInterface
             'smsNumber' => $smsNumber->getNumber(),
             'smsPrice' => $smsNumber->getPriceGross(),
             'smsCode' => $this->simPayService->getSmsCode()->getCode(),
+            '_simpay_nonce' => wp_create_nonce('simpay_paywall_nonce'),
         ]);
     }
 

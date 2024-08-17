@@ -13,9 +13,10 @@
 $args = array_merge($defaultArgs, $args);
 ?>
 
-<input id="<?php echo $args['name']; ?>"
-    type="<?php echo $args['type']; ?>"
-    type="<?php echo $args['value']; ?>"
-    name="<?php echo $args['name']; ?>"
-    placeholder="<?php echo $args['placeholder']; ?>"
-    value="<?php echo $args['value']; ?>">
+<input
+    id="<?php echo esc_html($args['name']); ?>"
+    type="<?php echo esc_html($args['type']); ?>"
+    type="<?php echo esc_html($args['value']); ?>"
+    name="<?php echo esc_html($args['name']); ?>"
+    placeholder="<?php echo esc_html($args['placeholder']); ?>"
+    value="<?php echo esc_html($args['value']); ?>">

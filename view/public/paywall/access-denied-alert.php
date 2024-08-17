@@ -7,7 +7,7 @@
     <p>Dostęp do treści na tej stronie jest zarezerwowany tylko dla płatnych użytkowników.</p>
     <?php if (isset($error) && null !== $error) { ?>
     <p>
-        <?php echo $error; ?>
+        <?php echo esc_html($error); ?>
     </p>
     <?php } ?>
     <?php if (isset($showNotLoggedInInfo) && true === $showNotLoggedInInfo) { ?>

@@ -4,8 +4,8 @@
 
 <p class="message">
     Aby się zarejestrować, wyślij SMS <br>na numer
-    <strong><?php echo $smsNumber; ?></strong><br>
-    o treści <strong><?php echo $smsCode; ?></strong>.<br>
+    <strong><?php echo esc_html($smsNumber); ?></strong><br>
+    o treści <strong><?php echo esc_html($smsCode); ?></strong>.<br>
     Koszt SMS to <strong><?php echo esc_html($smsPrice); ?> zł
         (brutto)</strong>
 </p>
