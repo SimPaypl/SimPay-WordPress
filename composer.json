@@ -1,6 +1,6 @@
 {
     "name": "simpay/simpay-wordpress",
-    "version": "2.2.2",
+    "version": "2.2.3",
     "type": "library",
     "require": {
         "simpaypl/simpay": "^2.2"

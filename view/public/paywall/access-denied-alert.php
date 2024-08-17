@@ -1,3 +1,7 @@
+<?php if (!defined('ABSPATH')) {
+    exit;
+} ?>
+
 <div class="simpay-alert-paywall">
     <h2>Dziękujemy za zainteresowanie!</h2>
     <p>Dostęp do treści na tej stronie jest zarezerwowany tylko dla płatnych użytkowników.</p>

@@ -1,3 +1,7 @@
+<?php if (!defined('ABSPATH')) {
+    exit;
+} ?>
+
 <p class="message">
     Aby się zarejestrować, wyślij SMS <br>na numer
     <strong><?php echo $smsNumber; ?></strong><br>
