@@ -15,6 +15,10 @@ class SaveMetaboxPaywallData implements ActionInterface
 
     public function __invoke($postId): void
     {
+        if (!isset($_POST['_simpay_nonce']) || !wp_verify_nonce($_POST['_simpay_nonce'], 'simpay_nonce')) {
+            return;
+        }
+
         update_post_meta(
             $postId,
             'paywall_active',

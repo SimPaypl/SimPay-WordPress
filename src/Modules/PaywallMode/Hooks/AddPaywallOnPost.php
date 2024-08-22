@@ -85,7 +85,7 @@ class AddPaywallOnPost implements FilterInterface
      */
     private function handlePaywallForm(mixed $wpQuery): ?string
     {
-        if (!isset($_POST['_simpay_nonce']) || !wp_verify_nonce($_POST['_simpay_nonce'], 'simpay_paywall_nonce')) {
+        if (!isset($_POST['_simpay_nonce']) || !wp_verify_nonce($_POST['_simpay_nonce'], 'simpay_nonce')) {
             return '';
         }
 

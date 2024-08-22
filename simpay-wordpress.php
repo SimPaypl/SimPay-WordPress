@@ -4,7 +4,7 @@
  * Plugin Name:       SimPay Wordpress
  * Plugin URI:        https://simpay.pl
  * Description:       Use SimPay SMS service to use during registration or access to the post.
- * Version:           2.2.4
+ * Version:           2.2.5
  * Author:            SimPay
  * Author URI:        https://simpay.pl
  * License:           GPL-2.0+
