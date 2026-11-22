@@ -20,5 +20,10 @@
             "docker_tag"
         ],
         "name": "simpay-wordpress"
+    },
+    "config": {
+        "platform": {
+            "php": "8.1.0"
+        }
     }
 }
