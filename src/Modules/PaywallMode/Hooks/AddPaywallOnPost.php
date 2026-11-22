@@ -126,7 +126,7 @@ class AddPaywallOnPost implements FilterInterface
         return $errors ?? null;
     }
 
-    public function renderSimPayPaymentForm(int $postId, string $error = null): void
+    public function renderSimPayPaymentForm(int $postId, ?string $error = null): void
     {
         $this->view->render('public.paywall.access-denied-alert', ['error' => $error]);
 

@@ -10,7 +10,7 @@ interface PaywallModeInterface
 
     public function getNumberOfPaywallPostsOfUser($userId = null, $posts = []): int;
 
-    public function getPostsByUser(int $userId = null): array|null;
+    public function getPostsByUser(?int $userId = null): array|null;
 
     public function grantAccessToPost(int $userId, int $postId);
 

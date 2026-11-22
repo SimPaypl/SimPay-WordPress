@@ -20,7 +20,7 @@ final class PaywallModeService implements PaywallModeInterface
         return (int) $result?->count;
     }
 
-    private function makeWhereCondition(array $singleWhere = null, array $arrayWhere = null, string $selector = '*'): string
+    private function makeWhereCondition(?array $singleWhere = null, ?array $arrayWhere = null, string $selector = '*'): string
     {
         $where = '';
         $clauses = [];
@@ -40,7 +40,7 @@ final class PaywallModeService implements PaywallModeInterface
         return "SELECT {$selector} FROM {$this->queryManager->getDbPrefix()}simpay_wp_paywall_payments pp{$where}";
     }
 
-    public function getPostsByUser(int $userId = null): array|null
+    public function getPostsByUser(?int $userId = null): array|null
     {
         $query = $this->makeWhereCondition(
             ['user_id', $userId],
