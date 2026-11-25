@@ -41,4 +41,4 @@ jobs:
       if: success() || failure()
       with:
         files: ${{ env.blob_name }}
-        tag_name: ${{ inputs.version }}
+        tag_name: ${{ github.event.release.tag_name }}
