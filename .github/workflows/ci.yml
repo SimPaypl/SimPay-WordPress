@@ -29,7 +29,6 @@ jobs:
         args: --no-dev --no-interaction --prefer-dist --optimize-autoloader --classmap-authoritative
         
     - name: Archive project
-      if: success() || failure()
       uses: php-actions/composer@8a65f0d3c6a1d17ca4800491a40b5756a4c164f3 # v6.1.2
       with:
         php_version: ${{ env.php_version }}
@@ -38,7 +37,6 @@ jobs:
         
     - name: Release
       uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
-      if: success() || failure()
       with:
         files: ${{ env.blob_name }}
         tag_name: ${{ github.event.release.tag_name }}
